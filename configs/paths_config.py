@@ -1,9 +1,9 @@
 ## Pretrained models paths
 e4e = './pretrained_models/e4e_ffhq_encode.pt'
-stylegan2_ada_ffhq = '../pretrained_models/ffhq.pkl'
+stylegan2_ada_ffhq = '/home/challenger/pti/pretrained_models/ffhq.pkl'
 style_clip_pretrained_mappers = ''
 ir_se50 = './pretrained_models/model_ir_se50.pth'
-dlib = './pretrained_models/align.dat'
+dlib = '/home/challenger/pti/pretrained_models/shape_predictor_68_face_landmarks.dat'
 
 ## Dirs for output files
 checkpoints_dir = './checkpoints'
@@ -13,7 +13,7 @@ experiments_output_dir = './output'
 
 ## Input info
 ### Input dir, where the images reside
-input_data_path = ''
+input_data_path = '/home/challenger/pti/kiritori_img'
 ### Inversion identifier, used to keeping track of the inversion results. Both the latent code and the generator
 input_data_id = 'barcelona'
 
