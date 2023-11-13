@@ -1,6 +1,6 @@
 import torch
 
-l2_criterion = torch.nn.MSELoss(reduction='mean')
+l2_criterion = torch.nn.MSELoss(reduction="mean")
 
 
 def l2_loss(real_images, generated_images):

@@ -7,15 +7,13 @@ from utils.log_utils import log_images_from_w
 
 
 class SingleIDCoach(BaseCoach):
-
     def __init__(self, data_loader, use_wandb):
         super().__init__(data_loader, use_wandb)
 
     def train(self):
-
-        w_path_dir = f'{paths_config.embedding_base_dir}/{paths_config.input_data_id}'
+        w_path_dir = f"{paths_config.embedding_base_dir}/{paths_config.input_data_id}"
         os.makedirs(w_path_dir, exist_ok=True)
-        os.makedirs(f'{w_path_dir}/{paths_config.pti_results_keyword}', exist_ok=True)
+        os.makedirs(f"{w_path_dir}/{paths_config.pti_results_keyword}", exist_ok=True)
 
         use_ball_holder = True
 
@@ -27,7 +25,9 @@ class SingleIDCoach(BaseCoach):
             if self.image_counter >= hyperparameters.max_images_to_invert:
                 break
 
-            embedding_dir = f'{w_path_dir}/{paths_config.pti_results_keyword}/{image_name}'
+            embedding_dir = (
+                f"{w_path_dir}/{paths_config.pti_results_keyword}/{image_name}"
+            )
             os.makedirs(embedding_dir, exist_ok=True)
 
             w_pivot = None
@@ -41,15 +41,20 @@ class SingleIDCoach(BaseCoach):
             # w_pivot = w_pivot.detach().clone().to(global_config.device)
             w_pivot = w_pivot.to(global_config.device)
 
-            torch.save(w_pivot, f'{embedding_dir}/0.pt')
+            torch.save(w_pivot, f"{embedding_dir}/0.pt")
             log_images_counter = 0
             real_images_batch = image.to(global_config.device)
 
             for i in tqdm(range(hyperparameters.max_pti_steps)):
-
                 generated_images = self.forward(w_pivot)
-                loss, l2_loss_val, loss_lpips = self.calc_loss(generated_images, real_images_batch, image_name,
-                                                               self.G, use_ball_holder, w_pivot)
+                loss, l2_loss_val, loss_lpips = self.calc_loss(
+                    generated_images,
+                    real_images_batch,
+                    image_name,
+                    self.G,
+                    use_ball_holder,
+                    w_pivot,
+                )
 
                 self.optimizer.zero_grad()
 
@@ -59,9 +64,17 @@ class SingleIDCoach(BaseCoach):
                 loss.backward()
                 self.optimizer.step()
 
-                use_ball_holder = global_config.training_step % hyperparameters.locality_regularization_interval == 0
+                use_ball_holder = (
+                    global_config.training_step
+                    % hyperparameters.locality_regularization_interval
+                    == 0
+                )
 
-                if self.use_wandb and log_images_counter % global_config.image_rec_result_log_snapshot == 0:
+                if (
+                    self.use_wandb
+                    and log_images_counter % global_config.image_rec_result_log_snapshot
+                    == 0
+                ):
                     log_images_from_w([w_pivot], self.G, [image_name])
 
                 global_config.training_step += 1
@@ -69,5 +82,7 @@ class SingleIDCoach(BaseCoach):
 
             self.image_counter += 1
 
-            torch.save(self.G,
-                       f'{paths_config.checkpoints_dir}/model_{global_config.run_name}_{image_name}.pt')
+            torch.save(
+                self.G,
+                f"{paths_config.checkpoints_dir}/model_{global_config.run_name}_{image_name}.pt",
+            )

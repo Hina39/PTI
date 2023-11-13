@@ -8,10 +8,8 @@ class LatentCodesDiscriminator(nn.Module):
         self.style_dim = style_dim
 
         layers = []
-        for i in range(n_mlp-1):
-            layers.append(
-                nn.Linear(style_dim, style_dim)
-            )
+        for i in range(n_mlp - 1):
+            layers.append(nn.Linear(style_dim, style_dim))
             layers.append(nn.LeakyReLU(0.2))
         layers.append(nn.Linear(512, 1))
         self.mlp = nn.Sequential(*layers)

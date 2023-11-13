@@ -1,7 +1,7 @@
 ## Architechture
-lpips_type = 'alex'
-first_inv_type = 'w'
-optim_type = 'adam'
+lpips_type = "alex"
+first_inv_type = "w"
+optim_type = "adam"
 
 ## Locality regularization
 latent_ball_num_of_samples = 1

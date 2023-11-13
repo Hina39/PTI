@@ -1,5 +1,4 @@
 import os
-import pickle
 from argparse import Namespace
 import torchvision
 import torch
@@ -21,8 +20,8 @@ def run(test_opts, model_id, image_name, use_multi_id_G):
     os.makedirs(out_path_results, exist_ok=True)
 
     # update test configs with configs used during training
-    ckpt = torch.load(test_opts.checkpoint_path, map_location='cpu')
-    opts = ckpt['opts']
+    ckpt = torch.load(test_opts.checkpoint_path, map_location="cpu")
+    opts = ckpt["opts"]
     opts.update(vars(test_opts))
     opts = Namespace(**opts)
 
@@ -35,8 +34,12 @@ def run(test_opts, model_id, image_name, use_multi_id_G):
     new_G = load_tuned_G(model_id, generator_type)
     old_G = load_old_G()
 
-    run_styleclip(net, new_G, opts, paths_config.pti_results_keyword, out_path_results, test_opts)
-    run_styleclip(net, old_G, opts, paths_config.e4e_results_keyword, out_path_results, test_opts)
+    run_styleclip(
+        net, new_G, opts, paths_config.pti_results_keyword, out_path_results, test_opts
+    )
+    run_styleclip(
+        net, old_G, opts, paths_config.e4e_results_keyword, out_path_results, test_opts
+    )
 
 
 def run_styleclip(net, G, opts, method, out_path_results, test_opts):
@@ -57,24 +60,37 @@ def run_styleclip(net, G, opts, method, out_path_results, test_opts):
         global_time.append(toc - tic)
 
     for i in range(opts.test_batch_size):
-        im_path = f'{test_opts.image_name}_{test_opts.edit_name}'
+        im_path = f"{test_opts.image_name}_{test_opts.edit_name}"
         if test_opts.couple_outputs:
-            couple_output = torch.cat([result_batch[2][i].unsqueeze(0), result_batch[0][i].unsqueeze(0)])
-            torchvision.utils.save_image(couple_output, os.path.join(out_path_results, f"{im_path}.jpg"),
-                                         normalize=True, range=(-1, 1))
+            couple_output = torch.cat(
+                [result_batch[2][i].unsqueeze(0), result_batch[0][i].unsqueeze(0)]
+            )
+            torchvision.utils.save_image(
+                couple_output,
+                os.path.join(out_path_results, f"{im_path}.jpg"),
+                normalize=True,
+                range=(-1, 1),
+            )
         else:
-            torchvision.utils.save_image(result_batch[0][i], os.path.join(out_path_results, f"{im_path}.jpg"),
-                                         normalize=True, range=(-1, 1))
-        torch.save(result_batch[1][i].detach().cpu(), os.path.join(out_path_results, f"latent_{im_path}.pt"))
+            torchvision.utils.save_image(
+                result_batch[0][i],
+                os.path.join(out_path_results, f"{im_path}.jpg"),
+                normalize=True,
+                range=(-1, 1),
+            )
+        torch.save(
+            result_batch[1][i].detach().cpu(),
+            os.path.join(out_path_results, f"latent_{im_path}.pt"),
+        )
 
 
 def run_on_batch(inputs, net, couple_outputs=False):
     w = inputs
     with torch.no_grad():
         w_hat = w + 0.06 * net.mapper(w)
-        x_hat = net.decoder.synthesis(w_hat, noise_mode='const', force_fp32=True)
+        x_hat = net.decoder.synthesis(w_hat, noise_mode="const", force_fp32=True)
         result_batch = (x_hat, w_hat)
         if couple_outputs:
-            x = net.decoder.synthesis(w, noise_mode='const', force_fp32=True)
+            x = net.decoder.synthesis(w, noise_mode="const", force_fp32=True)
             result_batch = (x_hat, w_hat, x)
     return result_batch
