@@ -5,7 +5,6 @@ from training.projectors import w_plus_projector
 
 
 class SG2PlusLatentCreator(BaseLatentCreator):
-
     def __init__(self, use_wandb=False, projection_steps=2000):
         super().__init__(paths_config.sg2_plus_results_keyword, use_wandb=use_wandb)
 
@@ -13,12 +12,18 @@ class SG2PlusLatentCreator(BaseLatentCreator):
 
     def run_projection(self, fname, image):
         image = torch.squeeze((image.to(global_config.device) + 1) / 2) * 255
-        w = w_plus_projector.project(self.old_G, image, device=torch.device(global_config.device),
-                                     num_steps=self.projection_steps, w_name=fname, use_wandb=self.use_wandb)
+        w = w_plus_projector.project(
+            self.old_G,
+            image,
+            device=torch.device(global_config.device),
+            num_steps=self.projection_steps,
+            w_name=fname,
+            use_wandb=self.use_wandb,
+        )
 
         return w
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     id_change_report = SG2PlusLatentCreator()
     id_change_report.create_latents()

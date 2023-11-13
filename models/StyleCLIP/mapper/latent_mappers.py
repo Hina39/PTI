@@ -6,7 +6,6 @@ from models.StyleCLIP.models.stylegan2.model import EqualLinear, PixelNorm
 
 
 class Mapper(Module):
-
     def __init__(self, opts):
         super(Mapper, self).__init__()
 
@@ -14,14 +13,9 @@ class Mapper(Module):
         layers = [PixelNorm()]
 
         for i in range(4):
-            layers.append(
-                EqualLinear(
-                    512, 512, lr_mul=0.01, activation='fused_lrelu'
-                )
-            )
+            layers.append(EqualLinear(512, 512, lr_mul=0.01, activation="fused_lrelu"))
 
         self.mapping = nn.Sequential(*layers)
-
 
     def forward(self, x):
         x = self.mapping(x)
@@ -29,7 +23,6 @@ class Mapper(Module):
 
 
 class SingleMapper(Module):
-
     def __init__(self, opts):
         super(SingleMapper, self).__init__()
 
@@ -43,7 +36,6 @@ class SingleMapper(Module):
 
 
 class LevelsMapper(Module):
-
     def __init__(self, opts):
         super(LevelsMapper, self).__init__()
 
@@ -74,8 +66,6 @@ class LevelsMapper(Module):
         else:
             x_fine = torch.zeros_like(x_fine)
 
-
         out = torch.cat([x_coarse, x_medium, x_fine], dim=1)
 
         return out
-
